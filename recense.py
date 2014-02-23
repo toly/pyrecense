@@ -52,19 +52,22 @@ def main():
     definitions_set = set(functions_definitions)
 
     definitions_tuples = definitions_counter.items()
-    definitions_tuples = filter(lambda x: x[1] != 1, definitions_tuples)
-    definitions_tuples.sort(key=lambda x: -x[1])
+    definitions_tuples = [(definition, count) for
+                          (definition, count) in definitions_tuples
+                          if count != 1]
+    definitions_tuples.sort(key=lambda (function_definition, count_definition): -count_definition)
 
-    print 'repited definitons:'
+    print '\nrepited definitons:'
     for definition, count in definitions_tuples:
         print '   %s: %d' % (definition, count)
 
     calls_tuples = Counter(functions_calls).items()
-    calls_tuples = filter(lambda x: x[0] in definitions_set, calls_tuples)
-    calls_tuples = filter(lambda x: x[1] < 5, calls_tuples)
-    calls_tuples.sort(key=lambda x: x[1])
+    calls_tuples = [(call, count) for
+                    (call, count) in calls_tuples
+                    if call in definitions_set and count < 5]
+    calls_tuples.sort(key=lambda (function_call, count_call): count_call)
 
-    print 'small used functions:'
+    print '\nsmall used functions:'
     for call, count in calls_tuples:
         print '    %s: %d' % (call, count)
 
