@@ -2,6 +2,7 @@
 # coding: utf-8
 __author__ = 'toly'
 
+import os
 import sys
 import argparse
 
@@ -32,7 +33,14 @@ def get_python_files(folder):
     """
         return full paths of python files in <folder>
     """
-    pass
+    fullpath = os.path.abspath(folder)
+    for (dirpath, dirnames, filenames) in os.walk(fullpath):
+        for filename in filenames:
+            if filename[-3:] != '.py':
+                continue
+            if 'migrations' in dirpath:
+                continue
+            yield os.path.join(dirpath, filename)
 
 
 def get_file_lines(filename):
