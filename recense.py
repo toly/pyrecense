@@ -2,9 +2,16 @@
 # coding: utf-8
 __author__ = 'toly'
 
+import re
 import os
 import sys
 import argparse
+
+
+BAD_FUNCTIONS = ['__init__', '__unicode__']
+
+FUNCTION_DEFINE_REGEXP = re.compile(r'def (\w+)\(')
+FUNCTION_CALL_REGEXP = re.compile(r'(\w+)\(')
 
 
 def main():
@@ -14,17 +21,30 @@ def main():
     arg_parser = create_argparser()
     args = arg_parser.parse_args()
 
-    functions = []
-    classes = []
-
+    functions_definitions = []
     functions_calls = []
-    classes_using = []
 
     project_files = get_python_files(args.project_directory)
     for file_index, filename in enumerate(project_files):
         for line in get_file_lines(filename):
             # getting functions, classes and their calls
-            pass
+            defs = [function_name for function_name in FUNCTION_DEFINE_REGEXP.findall(line)]
+            if defs:
+                has_bad_functions = False
+
+                for bad_function in BAD_FUNCTIONS:
+                    if bad_function in defs:
+                        has_bad_functions = True
+
+                if has_bad_functions:
+                    continue
+
+                functions_definitions += defs
+                continue
+
+            calls = [function_name for function_name in FUNCTION_CALL_REGEXP.findall(line)]
+            if calls:
+                functions_calls += calls
 
     # output statistics
 
@@ -37,6 +57,8 @@ def get_python_files(folder):
     for (dirpath, dirnames, filenames) in os.walk(fullpath):
         for filename in filenames:
             if filename[-3:] != '.py':
+                continue
+            if filename.endswith('admin.py'):
                 continue
             if 'migrations' in dirpath:
                 continue
