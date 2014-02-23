@@ -28,18 +28,18 @@ def main():
     for file_index, filename in enumerate(project_files):
         for line in get_file_lines(filename):
             # getting functions, classes and their calls
-            defs = [function_name for function_name in FUNCTION_DEFINE_REGEXP.findall(line)]
-            if defs:
+            definitions = [function_name for function_name in FUNCTION_DEFINE_REGEXP.findall(line)]
+            if definitions:
                 has_bad_functions = False
 
                 for bad_function in BAD_FUNCTIONS:
-                    if bad_function in defs:
+                    if bad_function in definitions:
                         has_bad_functions = True
 
                 if has_bad_functions:
                     continue
 
-                functions_definitions += defs
+                functions_definitions += definitions
                 continue
 
             calls = [function_name for function_name in FUNCTION_CALL_REGEXP.findall(line)]
