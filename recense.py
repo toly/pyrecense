@@ -47,7 +47,9 @@ def get_file_lines(filename):
     """
         generator lines from file
     """
-    pass
+    with open(filename) as f:
+        for line in f:
+            yield line
 
 
 def create_argparser():
