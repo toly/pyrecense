@@ -6,9 +6,10 @@ import re
 import os
 import sys
 import argparse
+from collections import Counter
 
 
-BAD_FUNCTIONS = ['__init__', '__unicode__']
+BAD_FUNCTIONS = ['__init__', '__unicode__', 'setUp', 'tearDown']
 
 FUNCTION_DEFINE_REGEXP = re.compile(r'def (\w+)\(')
 FUNCTION_CALL_REGEXP = re.compile(r'(\w+)\(')
@@ -47,6 +48,16 @@ def main():
                 functions_calls += calls
 
     # output statistics
+    definitions_counter = Counter(functions_definitions)
+    definitions_set = set(functions_definitions)
+
+    print 'repited definitons:'
+    definitions_tuples = definitions_counter.items()
+    definitions_tuples = filter(lambda x: x[1] != 1, definitions_tuples)
+    definitions_tuples.sort(key=lambda x: -x[1])
+
+    for definition, count in definitions_tuples:
+        print '   %s: %d' % (definition, count)
 
 
 def get_python_files(folder):
