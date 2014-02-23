@@ -47,17 +47,26 @@ def main():
             if calls:
                 functions_calls += calls
 
-    # output statistics
+    # prepare and output statistics
     definitions_counter = Counter(functions_definitions)
     definitions_set = set(functions_definitions)
 
-    print 'repited definitons:'
     definitions_tuples = definitions_counter.items()
     definitions_tuples = filter(lambda x: x[1] != 1, definitions_tuples)
     definitions_tuples.sort(key=lambda x: -x[1])
 
+    print 'repited definitons:'
     for definition, count in definitions_tuples:
         print '   %s: %d' % (definition, count)
+
+    calls_tuples = Counter(functions_calls).items()
+    calls_tuples = filter(lambda x: x[0] in definitions_set, calls_tuples)
+    calls_tuples = filter(lambda x: x[1] < 5, calls_tuples)
+    calls_tuples.sort(key=lambda x: x[1])
+
+    print 'small used functions:'
+    for call, count in calls_tuples:
+        print '    %s: %d' % (call, count)
 
 
 def get_python_files(folder):
